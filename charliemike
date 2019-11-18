@@ -1,89 +1,258 @@
 """
-Names: Adrian Barraza and Caroline Mitchell
-Project Name: Charlie Mike
+Name: Adrian Barraza and Caroline Mitchell
+File: codysCoffee.py
+
+Comments:
+
+
+Cody's Coffee is an adventure game in which a cadet must navigate through West Point,
+from barracks to the first floor of Thayer, in order to get a cup of coffee from the EECS Department.
+The cadet moves using the arrow keys, but has the ability to send "salutes" towards
+instructors in order to remove them from the field, because if the cadet is touched by 
+an instructor without saluting them, the cadet will return to the start point of the previous
+level. The cadet will be able to "shoot" salutes at instructors using the mouse to aim and clicking to "shoot".
+The instructors will pace back and forth, at differing speeds in their areas, and the
+cadet must do everything to avoid them, because there is a timer that begins at the start. If the timer
+reaches 730 before the cadet attains the cup of coffee, it is game over and the cadet loses.
+There is only one level right now, but it will be expanded upon to include more areas, as well as more instructors
+at each level, with a boss (LTC Cody) guarding the coffee at the end.
+
+The skeleton currently displays the cadet, the salute object, and a sample instructor to the 
+screen, along with the level counter.  All elements are static.  Additionally, 
+variables used for maintaining and altering game state have been defined at the 
+top of the file.  
+
+The project team includes CDTs Barraza and Mitchell. Pygame zero, random and math modules
+were used for this project.
+
 """
+
+
+
+"""
+Attribution:
+Instructor images: 
+https://westpoint.edu/academics/academic-departments/electrical-engineering-and-computer-science/staff-and-faculty
+
+Cadet Hat Image:
+https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwiHotj1ufPlAhVEmuAKHQi7CmUQjhx6BAgBEAI&url=https%3A%2F%2Fwww.bernardcap.com%2Fproducts%2Fcaps%2Fus-military-academy-west-point-cadet-service-cap-mens%2F&psig=AOvVaw0muEX0w28kIm6FRhgH0Vuv&ust=1574155918109544
+
+Hand Salute Image:
+https://www.google.com/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwj8yp-CuvPlAhXOMd8KHW78B7gQjhx6BAgBEAI&url=https%3A%2F%2Fwww.alamy.com%2Fstudio-portrait-of-smiling-soldier-giving-hand-salute-image239461922.html&psig=AOvVaw1krfRC4Tou1Qgq7zLBFZXp&ust=1574155943327047
+
+Map Image:
+https://www.google.com/maps?hl=en&tab=wl&authuser=0
+
+"""
+
 import pygame
- 
-#control cadet movements with keys 
-from pygame.locals import (
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
-    K_ESCAPE,
-    KEYDOWN,
-    QUIT,
-  )
-  
- # create GUI
- 
- pygame.init()
- 
- # define screen size
- SCREEN_WIDTH = 800
- SCREEN_HEIGHT = 800
- screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-## CITATION: referenced https://realpython.com/pygame-a-primer/#basic-game-design to figure out how to 
-## initialize the game and set screen dimensions
- screen.fill = 
+import sys
+import math
+import random
 
-# keep screen up while game is running
-running = True
+pygame.init()
 
-while running: # all events go in this section 
-  for event in pygame.event.get():
+#Define your global constants (that you don't want to change) here
+WIDTH=850
+HEIGHT=650
+SALUTE_RAD = 5
+SALUTE_IMAGE = pygame.image.load('hand_salute.png')
+SALUTE_SPEED = 5
+YELLOW = (255, 255, 0)
+LEVEL_COLOR = YELLOW
+LEVEL_1 = pygame.image.load('map_0.png') #Thayer Walk intersection
+
+
+#Define global variables that maintain the state of the game here
+#Add your primary pieces/characters/boxes/etc...
+
+#Create the cadet
+cadet = Actor('cadet_hat')
+cadet.pos = (WIDTH/2, 40) #place cadet at the start
+#ADD the following attributes to cadet
+cadet.thrust = 1 
+cadet.velx = 0
+cadet.vely = 0
+
+#Create the instructor (currently just moves left or right)
+instr = Actor('eecs_o1')
+instr.pos = (745,234)
+#instr.pos = (random.randint(70,WIDTH-70),random.randint(70,HEIGHT-70))
+instr.vel = 2
+
+#Create the salute
+saluteHand = Actor('hand_salute')
+saluteHand.pos = (-40+cadet.pos[0],-10+cadet.pos[1])
+saluteHand.vel = 2
+
+#Create a data structure to hold salutes
+salutes = []
+
+#Create a structure to hold game state.
+lvl = 0
+game_states = {'area0':'level_0','area1':'level_1','area2':'level_2','area3':'level_3'}
+curr_game_state = game_states['area'+str(lvl)]
+#curr_game_state is the variable for the current level area, based on lvl (level #)
+#game_states['level_3'] could be the EECS Department area
+
+
+#TOP LEVEL PROCEDURES:
+#  draw and update should contain primarily function and procedure 
+#    calls that you create.
+#  REMEMBER:  Pygame Zero handles the main game loop for you.  Every 
+#             time a new frame is drawn, update will be called and then 
+#             draw will be called.  
+
+#Run space_blast.py by typing the following in Konsole
+#     pgzrun space_blast.py
+
+#Procedure: draw
+#Pygame zero objects are used to represent items to be displayed 
+#  to the screen 
+#None->None
+def draw():
+    """Draws items on the screen.
+    """
+    #You should draw enough items to show your basic interface.  This does 
+    #  not have to function.  If you have an introduction screen you could 
+    #  show that.
+    background_image = screen.blit(LEVEL_1,(0,0))
+    #background_image = pygame.image.load("map.png").convert()
+    instr.draw()
+    cadet.draw()
+    saluteHand.draw()
+    screen.draw.text("Score: "+str(curr_game_state),(10,10),color=YELLOW)
     
- # cadet move up, down, left, right 
- pressedkeys = pygame.key.get_pressed()
- cadet.update(pressed_keys)
-  if pressed_keys[K_UP]:
-    self.rect.move_ip(0,-10)
-  if pressed_keys[K_DOWN]:
-    self.rect.move_ip(-10,0)
-  if pressed_keys[K_LEFT]:
-    self.rect.move_ip(-5,0)
-  if pressed_keys[K_RIGHT]:
-    self.rect.move_ip(5,0)
+
+#Procedure: draw_salutes
+# Tuples of Numbers represent salute position and heading
+# None->None
+def draw_salutes ():
+    """For each salute in the salute list, draw a circle 
+    at the x and y position specified.
+    """
+    pass    
     
-  # keep cadet on the screen (rect is incorrect call but just a filler for now)
-  if self.rect.left < 0:
-    self.rect.left - 0 
-  if self.rect.right > SCREEN_WIDTH:
-    self.rect.right = SCREEN_WIDTH
-  if self.rect.top <= 0:
-    self.rect.top = 0
-  if self.rect.bottom >= SCREEN_HEIGHT:
-     self.rect.bottom = SCREEN_HEIGHT
- 
- # closing the game
-    if event.type == KEYDOWN:
-      if event.key == K_ESCAPE:
-        running = False
-    elif event.type == QUIT:
-      running = False
- 
- # speed of salute 
- # speed of professor 
- 
- 
- # loops
- 
- # game level 
- # reaches end
- # professor moves left--> right 
- # obstacles
-  
- # render - 
- 
- # cadet graphic
- def cadet(pygame.sprite.Sprite):
-  def __init__(self):
-    ## put photo for sprite here
+#Procedure: update
+#Pygame zero objects and Python objects represent the state of the 
+#   game
+#None->None
+def update():
+    """Updates various objects to maintain the current state of the 
+    game.    
+    """
+    pass
+
+#Procedure: update_salutes
+# A list of tuples of numbers represents salutes with each tuple containint 
+#  the salute position and heading
+#None->None
+def update_salutes():
+    """Updates the salute x and y coordinates based on the salute velocity and 
+    heading.  Removes salutes that are out of bounds.
+    """
+    pass
+
+#Procedure: update_instr
+# A Pygame Zero Actor object represents an instructor.
+# None->None
+def update_instr ():
+    """Changes the instructor's state including location and velocity.
+    """
+    pass
+
+#Procedure: instr_disap
+# A Pygame Zero actor object represents an instructor and a clock object represents 
+#   the game clock object for scheduling tasks.
+#None->None
+def instr_disap ():
+    """If a salute object makes contact with the instructor, it removes the instructor
+    from the map.
+    """
+    pass
+
+
+
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~
+#Need to change/add variables below here!
+
+
+
+
+
+#Procedure: update_cadet
+#A Pygame actor object represents a space cadet.
+#None->None  
+def update_cadet ():
+    """Updates the cadet's x and y coordinates by its current 
+    x and y velocity
+    """
+    pass
+
+#Function: check_velocity
+#Numbers represent a coordinate value (x or y), velocity, and acceptable min
+#   and max coordinate values
+#Number,Number,Number,Number -> Number
+def check_velocity (coord, vel, min_val, max_val):
+    """Receives a single coordinate, a velocity, a minimum coordinate and a 
+    maximum coordinate and returns the velocity unchanged if the coordinate is 
+    between min and max, and 0 otherwise.
+    """
+    pass
+        
+#Procedure: on_key_down 
+#A Pygame object contains all the integer values for keys.  An integer represents
+#   the key that was pressed.
+#Integer -> None
+def on_key_down(key):
+    """Receives an integer representing a key and takes actions associated 
+    with a specific key press.
     
- # professor graphics
- def professor1(pygame.sprite.Sprite):
- 
- # salute graphic
- def salute(pygame
- # obstacle graphic
- # background graphic
+    Pressing the space bar causes the thrusters to fire.  
+    """
+    pass
+
+#Procedure: move_cadet
+#A Pygame actor represents a cadet
+#None->None
+def fire_thrusters():
+    """Sets the cadet's velocity according to the 's current 
+    rotation (enabling the cadet to move in that direction).
+    """
+    pass
+
+
+#Procedure: on_mouse_move
+#A tuple of integers represents the current mouse position.
+#Tuple of Integers -> None
+def on_mouse_move (pos):
+    """Receives the current mouse position and sets the 
+    ship's angle so that it is equal to the angle between 
+    its current position and the mouse position.
+    """
+    pass
+
+#Procedure: on_mouse_down 
+# A tuple of integers represents the (x, y) position of the mouse and an 
+#  integer represents which mouse button was pushed.
+# Tuple of Integers, Integer -> None
+def on_mouse_down (pos, button):
+    """Receives a current mouse position (x, y) and a mouse button pressed and 
+    takes appropriate action.
+    """
+    pass
+
+#Procedure: fire
+#  A list of tuples represents bullets fired with each bullet represented by 
+#   a tuple of values including bullet x position, y position, and heading.
+#None->None
+def salute ():
+    """Adds a new bullet tuple to the bullets list at the ships current position 
+    and with the ship's current heading.
+    """
+    pass
+
+
