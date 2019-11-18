@@ -2,3 +2,80 @@
 Names: Adrian Barraza and Caroline Mitchell
 Project Name: Charlie Mike
 """
+import pygame
+ 
+#control cadet movements with keys 
+from pygame.locals import (
+    K_UP,
+    K_DOWN,
+    K_LEFT,
+    K_RIGHT,
+    K_ESCAPE,
+    KEYDOWN,
+    QUIT,
+  )
+  
+ # create GUI
+ 
+ pygame.init()
+ 
+ # define screen size
+ SCREEN_WIDTH = 800
+ SCREEN_HEIGHT = 800
+ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+## CITATION: referenced https://realpython.com/pygame-a-primer/#basic-game-design to figure out how to 
+## initialize the game and set screen dimensions
+ screen.fill = 
+
+# keep screen up while game is running
+running = True
+
+while running: # all events go in this section 
+  for event in pygame.event.get():
+    
+ # cadet move up, down, left, right 
+ pressedkeys = pygame.key.get_pressed()
+ cadet.update(pressed_keys)
+  if pressed_keys[K_UP]:
+    self.rect.move_ip(0,-10)
+  if pressed_keys[K_DOWN]:
+    self.rect.move_ip(-10,0)
+  if pressed_keys[K_LEFT]:
+    self.rect.move_ip(-5,0)
+  if pressed_keys[K_RIGHT]:
+    self.rect.move_ip(5,0)
+ 
+ # closing the game
+    if event.type == KEYDOWN:
+      if event.key == K_ESCAPE:
+        running = False
+    elif event.type == QUIT:
+      running = False
+ 
+ # speed of salute 
+ # speed of professor 
+ 
+ 
+ # loops
+ 
+ # game level 
+ # failure prompt 
+ # life remaining/score
+ # timer
+ # professor moves left--> right 
+ # obstacles
+  
+ # render - 
+ 
+ # cadet graphic
+ def cadet(pygame.sprite.Sprite):
+  def __init__(self):
+    ## put photo for sprite here
+    
+ # professor graphics
+ def professor1(pygame.sprite.Sprite):
+ 
+ # salute graphic
+ def salute(pygame
+ # obstacle graphic
+ # background graphic
